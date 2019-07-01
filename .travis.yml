@@ -1,0 +1,17 @@
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t mlemartien/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  # "-- --coverage" forces the use of coverage in the npm test so we don't get
+  # the default interactive test menu
+  - docker run mlemartien/react-test npm test -- --coverage
+
+after_success:
+  - docker build -t mlemartien/multi-docker-service-lab-client ./client
+  - docker build -t mlemartien/multi-docker-service-lab-nginx ./nginx
+  - docker build -t mlemartien/multi-docker-service-lab-worker ./worker
+  - docker build -t mlemartien/multi-docker-service-lab-server ./server
